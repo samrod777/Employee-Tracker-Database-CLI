@@ -8,12 +8,12 @@ const connection = mysql.createConnection({
   user: "root",
   password: "influence",
   database: "employee_db",
-});
+})
 
 connection.connect(function (err) {
   if (err) throw err;
   startApp();
-});
+})
 
 const userQuestion = [
   {
@@ -29,9 +29,9 @@ const userQuestion = [
       "View All Employees",
       "Update Employee Role",
       "Exit",
-    ],
-  },
-];
+    ]
+  }
+]
 
 function startApp() {
   inquirer.prompt(userQuestion).then(function (response) {
@@ -93,7 +93,7 @@ function addDept() {
         }
       )
     })
-}nod
+}
 
 function addRole() {
   let query = "SELECT * FROM department ORDER BY department_name ASC";
@@ -128,11 +128,11 @@ function addRole() {
         },
       ])
       .then(function (response) {
-        let chosenDeptId;
+        let selectedDepartmentId;
 
         for (let i = 0; i < results.length; i++) {
           if (results[i].department_name === response.dept) {
-            chosenDeptId = results[i].id;
+            selectedDepartmentId = results[i].id;
           }
         }
 
@@ -141,7 +141,7 @@ function addRole() {
           {
             title: response.newRole,
             salary: response.salary,
-            department_id: chosenDeptId,
+            department_id: selectedDepartmentId,
           },
           function (err) {
             if (err) throw err;
@@ -149,9 +149,9 @@ function addRole() {
 
             startApp();
           }
-        );
-      });
-  });
+        )
+      })
+  })
 }
 
 function addEmployee() {
@@ -233,9 +233,9 @@ function addEmployee() {
 
             startApp();
           }
-        );
-      });
-  });
+        )
+      })
+  })
 }
 
 function allDeparments() {
@@ -248,7 +248,7 @@ function allDeparments() {
     console.table(results);
 
     startApp();
-  });
+  })
 }
 
 function allRoles() {
@@ -260,7 +260,7 @@ function allRoles() {
     console.table(results);
 
     startApp();
-  });
+  })
 }
 
 function allEmployees() {
@@ -273,7 +273,7 @@ function allEmployees() {
     console.table(results);
 
     startApp();
-  });
+  })
 }
 
 function updateRole() {
@@ -292,6 +292,7 @@ function updateRole() {
 
       let eachRole = results[i].title;
       allRoles.push(eachRole);
+      console.log(allRoles)
     }
 
     inquirer
@@ -345,7 +346,7 @@ function updateRole() {
 
             startApp();
           }
-        );
-      });
-  });
+        )
+      })
+  })
 }
