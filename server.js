@@ -27,8 +27,6 @@ const userQuestion = [
           "View All Departments",
           "View All Roles",
           "View All Employees",
-          "View All Employees by Department",
-          "Remove Employee",
           "Update Employee Role",
           "Exit"
       ]
@@ -176,7 +174,7 @@ function addEmployee() {
       inquirer
       .prompt([
           {
-              type: "input",
+              type: "input",nod
               message: "What is the employee's first name?",
               name: "firstName"
           },
@@ -233,4 +231,5 @@ function addEmployee() {
       })
   })
 }
+
 
