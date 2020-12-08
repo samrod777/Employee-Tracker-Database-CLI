@@ -244,3 +244,15 @@ function allDeparments() {
   })
 }
 
+function allRoles() {
+  let query = "SELECT DISTINCT title AS Title FROM role ORDER BY title ASC";
+
+  connection.query(query, function(err, results) {
+      if (err) throw err;
+
+      console.table(results);
+
+      startApp();
+  })   
+}
+
