@@ -74,14 +74,6 @@ function startApp() {
               case "Exit":
                   connection.end();
 
-              // case "View All Employees by Department":
-              //     allEmployeesByDept();
-              // break;
-              
-              // case "Remove Employee":
-              //     removeEmployee();
-              // break;
-         
           }
       })
 }
@@ -97,7 +89,7 @@ function addDept() {
   ]).then(function(response) {
       connection.query("INSERT INTO department SET ?", 
           {
-            department_name: response.newDept
+              department_name: response.newDept
           },
           function(err) {
               if (err) throw err;
@@ -108,4 +100,137 @@ function addDept() {
       })
 }
 
+function addRole() {
+  let query = "SELECT * FROM department ORDER BY department_name ASC";
+
+  connection.query(query, function(err, results) {
+      if (err) throw err;
+
+      let allDeparments = [];
+
+      for (let i = 0; i < results.length; i++) {
+          let eachDepartment = results[i].department_name;
+          allDeparments.push(eachDepartment);
+      }
+
+      inquirer
+      .prompt([
+          {
+              type: "input",
+              message: "What role would you like to add?",
+              name: "newRole"
+          },
+          {
+              type: "input",
+              message: "What is the salary for this new role?",
+              name: "salary"
+          },
+          {
+              type: "list",
+              message: "In which department is this new role?",
+              name: "dept",
+              choices: [...allDeparments]
+          }
+      ]).then(function(response) {
+          let chosenDeptId;
+
+          for (let i = 0; i < results.length; i++) {
+              if (results[i].department_name === response.dept) {
+                  chosenDeptId = results[i].id;
+              }
+          }
+
+          connection.query("INSERT INTO role SET ?", 
+              {
+                  title: response.newRole,
+                  salary: response.salary,
+                  department_id: chosenDeptId
+              },
+              function(err) {
+                  if (err) throw err;
+                  console.log("New role has been added");
+  
+                  startApp();
+              })   
+      })
+  })
+}
+
+function addEmployee() {
+  let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
+
+  connection.query(query, function(err, results) {
+      if (err) throw err;
+
+      let employeeNames = ["None"];
+      let allRoles = [];
+
+      for (let i = 0; i < results.length; i++) {
+          let eachName = results[i].first_name + " " + results[i].last_name;
+          employeeNames.push(eachName);
+
+          let eachRole = results[i].title;
+          allRoles.push(eachRole); 
+      }
+
+      inquirer
+      .prompt([
+          {
+              type: "input",
+              message: "What is the employee's first name?",
+              name: "firstName"
+          },
+          {
+              type: "input",
+              message: "What is the employee's last name?",
+              name: "lastName"
+          },
+          {
+              type: "list",
+              message: "Select the employee's title.",
+              name: "title",
+              choices: [...allRoles]
+          },
+          {
+              type: "list",
+              message: "Who is the employee's manager?",
+              name: "empManager",
+              choices: [...employeeNames]
+          }
+      ]).then(function(response) {
+          let chosenRoleId = "";
+          
+          for (let i = 0; i < results.length; i++) {
+              if (response.title === results[i].title) {
+                  chosenRoleId = results[i].role_id;
+              }
+          }
+
+          let chosenMgrId = "";
+
+          for (let i = 0; i < results.length; i++) {
+              if (response.empManager === (results[i].first_name + " " + results[i].last_name)) {
+                  chosenMgrId = results[i].id;
+              }
+              else if (response.empManager === "None") {
+                  chosenMgrId = null;
+              }
+          }
+
+          connection.query("INSERT INTO employee SET ?",   
+              {
+                  first_name: response.firstName,
+                  last_name: response.lastName,
+                  role_id: chosenRoleId,
+                  manager_id: chosenMgrId
+              },
+              function(err) {
+                  if (err) throw err;
+                  console.log("Employee database updated!");
+
+                  startApp();
+          });
+      })
+  })
+}
 
