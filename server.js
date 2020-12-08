@@ -54,7 +54,7 @@ function startApp() {
               break;
 
               case "View All Departments":
-                  allDepts();
+                allDeparments();
               break;
 
               case "View All Roles":
@@ -174,7 +174,7 @@ function addEmployee() {
       inquirer
       .prompt([
           {
-              type: "input",nod
+              type: "input",
               message: "What is the employee's first name?",
               name: "firstName"
           },
@@ -232,4 +232,15 @@ function addEmployee() {
   })
 }
 
+function allDeparments() {
+  let query = "SELECT DISTINCT department_name AS Department FROM department ORDER BY department_name ASC";
+
+  connection.query(query, function(err, results) {
+      if (err) throw err;
+
+      console.table(results);
+
+      startApp();
+  })
+}
 
