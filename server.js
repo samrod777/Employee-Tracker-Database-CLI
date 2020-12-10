@@ -300,7 +300,6 @@ function updateRole() {
 
       let eachRole = results[i].title;
       allRoles.push(eachRole);
-      console.log(allRoles)
     }
 
     inquirer
