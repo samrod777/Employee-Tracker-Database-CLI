@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
+const util = require("util");
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -9,6 +10,8 @@ const connection = mysql.createConnection({
   password: "influence",
   database: "employee_db",
 })
+connection.query = util.promisify(connection.query)
+
 
 connection.connect(function (err) {
   if (err) throw err;
@@ -154,9 +157,14 @@ function addRole() {
   })
 }
 
-function addEmployee() {
+async function addEmployee() {
   let query =
     "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
+
+  const roles = await connection.query("SELECT * FROM role")
+  const roleTitles = roles.map((role) => {
+    return role.title
+  }) 
 
   connection.query(query, function (err, results) {
     if (err) throw err;
@@ -188,7 +196,7 @@ function addEmployee() {
           type: "list",
           message: "Select the employee's title.",
           name: "title",
-          choices: [...allRoles],
+          choices: roleTitles,
         },
         {
           type: "list",
@@ -200,9 +208,9 @@ function addEmployee() {
       .then(function (response) {
         let selectedRoleId = "";
 
-        for (let i = 0; i < results.length; i++) {
-          if (response.title === results[i].title) {
-            selectedRoleId = results[i].role_id;
+        for (let i = 0; i < roles.length; i++) {
+          if (response.title === roles[i].title) {
+            selectedRoleId = roles[i].id;
           }
         }
 
